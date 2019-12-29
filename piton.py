@@ -17,7 +17,6 @@ def over():
     canvas.create_text(235, 300, text='Очки:', fill='green', font=('Courier', 30))
     canvas.create_text(310, 300, text=opit, fill='green', font=('Courier', 30))
 
-
 def move_up(self):
     canvas.itemconfig(mytriangle, image=my_up)
     global upni, downni, leftni, rightni
