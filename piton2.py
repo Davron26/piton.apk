@@ -4,22 +4,26 @@ from kivy.animation import Animation
 from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
-from kivy.core.window import Window
+#from kivy.core.window import Window
 from kivy.uix.widget import Widget
 
-Window.clearcolor = (1, 1, 1, 1)
+#Window.clearcolor = (1, 1, 1, 1)
 
 class PitonApp(App):
     def r_animation(self,instance):
+        self.img.source='figure-right.gif'
         animation=Animation(x=+390)
         animation.start(self.img)
     def d_animation(self,instance):
+        self.img.source = 'figure-down.gif'
         animation=Animation(y=+60)
         animation.start(self.img)
     def l_animation(self,instance):
+        self.img.source = 'figure-left.gif'
         animation=Animation(x=-390)
         animation.start(self.img)
     def u_animation(self,instance):
+        self.img.source = 'figure-up.gif'
         animation=Animation(y=+440)
         animation.start(self.img)
     def build(self):
