@@ -10,45 +10,56 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.properties import ListProperty
 from kivy.clock import Clock
 
+upni = 0
+downni = 0
+leftni = 0
+rightni = 0
+
 class PitonApp(App):
-    #velocity = ListProperty([10, 15])
-    #def __init__(self, **kwargs):
-    #    super(PitonApp, self).__init__(**kwargs)
-    #    Clock.schedule_interval(self.r_animation)
-
-    #def update(self, *args):
-    #    self.img.x += self.velocity[0]
-    #    self.img.y += self.velocity[1]
-#
-    #    if self.img.x < 0 or (self.img.x + self.img.width) > Window.width:
-    #        self.velocity[0] *= -1
-    #    if self.img.y < 0 or (self.img.y + self.img.width) > Window.width:
-    #        self.velocity[0] *= -1
-
     def r_animation(self, instance):
         self.img.source = 'figure-right.gif'
-        #animation = Animation(x=+500)
-        #animation.start(self.img)
-        #while self.img.source == 'figure-right.gif':
-        self.img.x += 5
+        global upni, downni, leftni, rightni
+        upni = 0
+        downni = 0
+        leftni = 0
+        rightni = 1
+        #Clock.schedule_interval(self.runpiton, 0.1)
 
     def d_animation(self, instance):
         self.img.source = 'figure-down.gif'
-        #animation = Animation(y=+500)
-        #animation.start(self.img)
-        self.img.y -= 5
+        global upni, downni, leftni, rightni
+        upni = 0
+        downni = 1
+        leftni = 0
+        rightni = 0
+        #Clock.schedule_interval(self.runpiton, 0.1)
 
     def l_animation(self, instance):
         self.img.source = 'figure-left.gif'
-        #animation = Animation(x=-500)
-        #animation.start(self.img)
-        self.img.x -= 5
+        global upni, downni, leftni, rightni
+        upni = 0
+        downni = 0
+        leftni = 1
+        rightni = 0
+        #Clock.schedule_interval(self.runpiton, 0.1)
 
     def u_animation(self, instance):
         self.img.source = 'figure-up.gif'
-        #animation = Animation(y=-500)
-        #animation.start(self.img)
-        self.img.y += 5
+        global upni, downni, leftni, rightni
+        upni = 1
+        downni = 0
+        leftni = 0
+        rightni = 0
+
+    def runpiton(self, *args):
+        if upni == 1:
+            self.img.y += 5
+        if downni == 1:
+            self.img.y -= 5
+        if leftni == 1:
+            self.img.x -= 5
+        if rightni == 1:
+            self.img.x += 5
 
     def build(self):
         gl = GridLayout(rows=2, padding=[0, 100, 0, 0], size_hint=(1, .5))
@@ -60,6 +71,7 @@ class PitonApp(App):
         btn_r = Button(text=">", on_press=self.r_animation)
 
         self.img = Image(source='figure-down.gif')
+        Clock.schedule_interval(self.runpiton, 0.01)
 
         fl.add_widget(self.img)
         fl.add_widget(gl)
@@ -72,7 +84,6 @@ class PitonApp(App):
         gl.add_widget(btn_r)
 
         return fl
-
 
 if __name__ == "__main__":
     PitonApp().run()
