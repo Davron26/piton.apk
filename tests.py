@@ -1,33 +1,42 @@
 import kivy
-kivy.require('1.0.7')
+kivy.require('1.0.8')
 
-from kivy.animation import Animation
-from kivy.app import App
-from kivy.uix.button import Button
+from kivy.core.window import Window
+from kivy.uix.widget import Widget
 
 
-class TestApp(App):
+class MyKeyboardListener(Widget):
 
-    def animate(self, instance):
-        # create an animation object. This object could be stored
-        # and reused each call or reused across different widgets.
-        # += is a sequential step, while &= is in parallel
-        animation = Animation(pos=(100, 100), t='out_bounce')
-        animation += Animation(pos=(200, 100), t='out_bounce')
-        #animation &= Animation(size=(500, 500))
-        #animation += Animation(size=(100, 50))
+    def __init__(self, **kwargs):
+        super(MyKeyboardListener, self).__init__(**kwargs)
+        self._keyboard = Window.request_keyboard(
+            self._keyboard_closed, self, 'text')
+        if self._keyboard.widget:
+            # If it exists, this widget is a VKeyboard object which you can use
+            # to change the keyboard layout.
+            pass
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
 
-        # apply the animation on the button, passed in the "instance" argument
-        # Notice that default 'click' animation (changing the button
-        # color while the mouse is down) is unchanged.
-        animation.start(instance)
+    def _keyboard_closed(self):
+        print('My keyboard have been closed!')
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        self._keyboard = None
 
-    def build(self):
-        # create a button, and  attach animate() method as a on_press handler
-        button = Button(size_hint=(None, None), text='plop',
-                        on_press=self.animate)
-        return button
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        print('The key', keycode, 'have been pressed')
+        print(' - text is %r' % text)
+        print(' - modifiers are %r' % modifiers)
+
+        # Keycode is composed of an integer + a string
+        # If we hit escape, release the keyboard
+        if keycode[1] == 'escape':
+            keyboard.release()
+
+        # Return True to accept the key. Otherwise, it will be used by
+        # the system.
+        return True
 
 
 if __name__ == '__main__':
-    TestApp().run()
+    from kivy.base import runTouchApp
+    runTouchApp(MyKeyboardListener())
