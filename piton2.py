@@ -103,7 +103,7 @@ class PitonApp(App):
 
         self.point.text = opit
 
-        self.timer = 0.03
+        self.timer = 0.035
 
         upni = 0
         downni = 0
@@ -129,10 +129,12 @@ class PitonApp(App):
         self.ru = 1
 
     def runpiton(self, *args):
+        print(self.img.size_hint_max)
+        print(self.itm.size_hint_max)
         self.gl.padding = [0, Window.height / 4, 0, 0]
         self.bgd.pos = [0, Window.height / 4]
-        self.img.size_hint_max = Window.height / 30, Window.height / 30
-        self.itm.size_hint_max = Window.height / 50, Window.height / 50
+        self.img.size_hint_max = Window.height / 45, Window.height / 45
+        self.itm.size_hint_max = Window.height / 60, (Window.height / 60) + 1
 
         self.up.size_hint_max = Window.height / 25, Window.height / 25
         self.down.size_hint_max = Window.height / 25, Window.height / 25
@@ -190,45 +192,37 @@ class PitonApp(App):
         if self.itm.y < 0 or (self.itm.y + self.itm.height) > Window.height:
             PitonApp.itmcall(self)
 
-        if self.img.collide_widget(self.btn_u) == True or self.img.collide_widget(self.bl) == True \
+        if self.img.collide_widget(self.btn_u) or self.img.collide_widget(self.bl)  \
                 or self.img.collide_widget(self.w1):
             lose(self)
 
-        if self.itm.collide_widget(self.btn_u) == True or self.itm.collide_widget(self.bl) == True \
-                or self.itm.collide_widget(self.w1) == True or self.itm.collide_widget(self.btn_l) == True \
-                or self.itm.collide_widget(self.btn_d) == True or self.itm.collide_widget(self.btn_r) == True:
+        if self.itm.collide_widget(self.btn_u) or self.itm.collide_widget(self.bl)  \
+                or self.itm.collide_widget(self.w1) or self.itm.collide_widget(self.btn_l)  \
+                or self.itm.collide_widget(self.btn_d) or self.itm.collide_widget(self.btn_r) :
             PitonApp.itmcall(self)
 
-        if (hasItem):
-            try:
-                x1, y1 = self.itm.pos
-                x2, y2 = self.img.pos
-            except ValueError:
-                pass
-            x2 += 8
-            y2 += 6
-            if (abs(x1 - x2) < 7) and (abs(y1 - y2) < 7):
+        if self.img.collide_widget(self.itm):
                 number += 1
                 opit = str(number)
                 self.point.text = opit
                 PitonApp.itmcall(self)
                 self.event = Clock.unschedule(self.runpiton)
-                self.timer -= 0.0025
+                self.timer -= 0.0030
                 self.event = Clock.schedule_interval(self.runpiton, self.timer)
 
     def build(self):
         self.en = 0
         self.ru = 0
-        self.timer = 0.03
+        self.timer = 0.035
 
         self.gl = GridLayout(rows=2, padding=[0, 0, 0, 0], size_hint=(1, .5))
         self.fl = FloatLayout(size=(500, 500))
         self.bl = GridLayout(rows=2, cols=2)
 
-        self.btn_u = Button(text="^", on_press=self.u_animation)
-        self.btn_d = Button(text="v", on_press=self.d_animation)
-        self.btn_l = Button(text="<", on_press=self.l_animation)
-        self.btn_r = Button(text=">", on_press=self.r_animation)
+        self.btn_u = Button(on_press=self.u_animation)
+        self.btn_d = Button(on_press=self.d_animation)
+        self.btn_l = Button(on_press=self.l_animation)
+        self.btn_r = Button(on_press=self.r_animation)
         self.w1 = Button(text="Рестарт", on_press=self.restart)
 
         self.rubtn = Button(text="RU", on_press=self.russian)
