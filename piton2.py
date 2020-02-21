@@ -8,6 +8,8 @@ from kivy.uix.widget import Widget
 from kivy.uix.floatlayout import FloatLayout
 from kivy.clock import Clock
 from kivy.uix.label import Label
+from kivy.core.audio import SoundLoader
+from kivy.uix.togglebutton import ToggleButton
 import random
 
 upni = 0
@@ -18,11 +20,10 @@ hasItem = True
 opit = str(0)
 number = 0
 
+eat = SoundLoader.load('eat.wav')
+
 o = random.randint(20, Window.width - 20)
 p = random.randint(20, Window.height - 20)
-
-#Window.size = (800, 500)
-
 
 class PitonApp(App):
     def itmcall(self):
@@ -76,8 +77,7 @@ class PitonApp(App):
         self.fl.clear_widgets()
 
         try:
-            self.bl.add_widget(self.rubtn)
-            self.bl.add_widget(self.enbtn)
+            #self.bl.add_widget(self.enbtn)
             self.bl.remove_widget(self.ochko)
             self.bl.remove_widget(self.point)
             self.bl.add_widget(self.ochko)
@@ -103,7 +103,7 @@ class PitonApp(App):
 
         self.point.text = opit
 
-        self.timer = 0.035
+        self.timer = 0.03
 
         upni = 0
         downni = 0
@@ -116,6 +116,9 @@ class PitonApp(App):
         self.ochko.text = 'Points:'
         self.los.text = 'You lose'
 
+        self.proz.text = 'Transparent wall'
+        self.real.text = 'Not transparent wall'
+
         self.en = 1
         self.ru = 0
 
@@ -125,12 +128,50 @@ class PitonApp(App):
         self.ochko.text = 'Очки:'
         self.los.text = 'Вы проиграли'
 
+        self.proz.text = 'Прозрачная стена'
+        self.real.text = 'Непрозрачная стена'
+
         self.en = 0
         self.ru = 1
 
+    def lose(self):
+        #self.bl.remove_widget(self.enbtn)
+
+        self.fl.remove_widget(self.bgd)
+        self.fl.remove_widget(self.itm)
+        self.fl.remove_widget(self.img)
+
+        self.fl.add_widget(self.los)
+        self.fl.add_widget(self.sub1)
+        self.fl.add_widget(self.sub2)
+
+    def funproz(self, instance):
+        self.devol = False
+
+    def funreal(self, instance):
+        self.devol = True
+
+    def runoptions(self, instance):
+        self.restart(instance)
+        self.lose()
+        self.fl.remove_widget(self.los)
+        self.fl.remove_widget(self.sub1)
+        self.fl.remove_widget(self.sub2)
+
+        self.glo = GridLayout(cols=2, padding = [0, 0, 0, Window.height / 4])
+        self.rubtn = Button(text='Русский язык', on_press = self.russian)
+        self.enbtn = Button(text='English language', on_press = self.english)
+        self.proz = Button(text='Прозрачная стена', on_press = self.funproz)
+        self.real = Button(text='Непрозрачная стена', on_press = self.funreal)
+
+        self.fl.add_widget(self.glo)
+
+        self.glo.add_widget(self.rubtn)
+        self.glo.add_widget(self.enbtn)
+        self.glo.add_widget(self.proz)
+        self.glo.add_widget(self.real)
+
     def runpiton(self, *args):
-        print(self.img.size_hint_max)
-        print(self.itm.size_hint_max)
         self.gl.padding = [0, Window.height / 4, 0, 0]
         self.bgd.pos = [0, Window.height / 4]
         self.img.size_hint_max = Window.height / 45, Window.height / 45
@@ -147,30 +188,33 @@ class PitonApp(App):
         self.left.pos = [Window.width / 6.65, Window.height / 20.5]
 
         self.los = Label(text='Вы проиграли', pos=[0, 0 + Window.height / 4])
-        self.sub1 = Label(text='Piton ver.1.0', pos=[0, (self.w1.pos[1] * -1) + 50])
+        self.sub1 = Label(text='Piton ver.1.1', pos=[0, (self.w1.pos[1] * -1) + 50])
         self.sub2 = Label(text='(c) Davron Tokhirov, Feb.2020', pos=[0, (self.w1.pos[1] * -1)])
 
         global opit
         global number
 
-        def lose(self):
-            self.bl.remove_widget(self.rubtn)
-            self.bl.remove_widget(self.enbtn)
-
-            self.fl.remove_widget(self.bgd)
-            self.fl.remove_widget(self.itm)
-            self.fl.remove_widget(self.img)
-
-            self.fl.add_widget(self.los)
-            self.fl.add_widget(self.sub1)
-            self.fl.add_widget(self.sub2)
-
         if self.en == 1 and self.ru == 0:
             self.los.text = 'You lose'
+            try:
+                self.proz.text = 'Transparent wall'
+                self.real.text = 'Not transparent wall'
+            except AttributeError:
+                pass
         if self.en == 0 and self.ru == 1:
             self.los.text = 'Вы проиграли'
+            try:
+                self.proz.text = 'Прозрачная стена'
+                self.real.text = 'Непрозрачная стена'
+            except AttributeError:
+                pass
         if self.en == 0 and self.ru == 0:
             self.los.text = 'Вы проиграли'
+            try:
+                self.proz.text = 'Прозрачная стена'
+                self.real.text = 'Непрозрачная стена'
+            except AttributeError:
+                pass
 
         if upni == 1:
             self.img.y += 5
@@ -181,20 +225,32 @@ class PitonApp(App):
         if rightni == 1:
             self.img.x += 5
 
-        if self.img.x < 0 or (self.img.x + self.img.width) > Window.width:
-            lose(self)
+        if self.img.x < 0 or self.img.x > Window.width:
+            if self.devol:
+                self.lose()
+            if self.devol == False:
+                if self.img.x < 0:
+                    self.img.x = Window.width
+                if self.img.x > Window.width:
+                    self.img.x = 0
 
-        if self.img.y < 0 or (self.img.y + self.img.height) > Window.height:
-            lose(self)
+        if self.img.y > Window.height:
+            if self.devol:
+                self.lose()
+            if self.devol == False:
+                self.img.y = Window.height / 3.9
 
         if self.itm.x < 0 or (self.itm.x + self.itm.width) > Window.width:
             PitonApp.itmcall(self)
         if self.itm.y < 0 or (self.itm.y + self.itm.height) > Window.height:
             PitonApp.itmcall(self)
 
-        if self.img.collide_widget(self.btn_u) or self.img.collide_widget(self.bl)  \
-                or self.img.collide_widget(self.w1):
-            lose(self)
+        if self.img.collide_widget(self.btn_u) or self.img.collide_widget(self.bl):#  \
+               # or self.img.collide_widget(self.w1):
+            if self.devol:
+                self.lose()
+            if self.devol == False:
+                self.img.y = Window.height
 
         if self.itm.collide_widget(self.btn_u) or self.itm.collide_widget(self.bl)  \
                 or self.itm.collide_widget(self.w1) or self.itm.collide_widget(self.btn_l)  \
@@ -202,6 +258,7 @@ class PitonApp(App):
             PitonApp.itmcall(self)
 
         if self.img.collide_widget(self.itm):
+                eat.play()
                 number += 1
                 opit = str(number)
                 self.point.text = opit
@@ -213,7 +270,8 @@ class PitonApp(App):
     def build(self):
         self.en = 0
         self.ru = 0
-        self.timer = 0.035
+        self.timer = 0.03
+        self.devol = True
 
         self.gl = GridLayout(rows=2, padding=[0, 0, 0, 0], size_hint=(1, .5))
         self.fl = FloatLayout(size=(500, 500))
@@ -223,10 +281,9 @@ class PitonApp(App):
         self.btn_d = Button(on_press=self.d_animation)
         self.btn_l = Button(on_press=self.l_animation)
         self.btn_r = Button(on_press=self.r_animation)
-        self.w1 = Button(text="Рестарт", on_press=self.restart)
 
-        self.rubtn = Button(text="RU", on_press=self.russian)
-        self.enbtn = Button(text="EN", on_press=self.english)
+        self.options = Button(text="Опция", on_press=self.runoptions)
+        self.w1 = Button(text="Рестарт", on_press=self.restart)
 
         self.bgd = Image(source='background.gif', allow_stretch = True, keep_ratio = False)
         self.ochko = Label(text='Очки:')
@@ -252,13 +309,13 @@ class PitonApp(App):
 
         self.gl.add_widget(self.bl)
         self.gl.add_widget(self.btn_u)
-        self.gl.add_widget(self.w1)
+        self.gl.add_widget(Widget())
         self.gl.add_widget(self.btn_l)
         self.gl.add_widget(self.btn_d)
         self.gl.add_widget(self.btn_r)
 
-        self.bl.add_widget(self.rubtn)
-        self.bl.add_widget(self.enbtn)
+        self.bl.add_widget(self.options)
+        self.bl.add_widget(self.w1)
         self.bl.add_widget(self.ochko)
         self.bl.add_widget(self.point)
 
