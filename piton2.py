@@ -10,12 +10,13 @@ from kivy.clock import Clock
 from kivy.uix.label import Label
 from kivy.core.audio import SoundLoader
 import random
-import time
 
 upni = 0
 downni = 0
 leftni = 0
 rightni = 0
+speed_x = 0
+speed_y = 0
 hasItem = True
 opit = str(0)
 number = 0
@@ -26,6 +27,10 @@ o = random.randint(20, Window.width - 20)
 p = random.randint(20, Window.height - 20)
 
 class PitonApp(App):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.imglist = None
+
     def itmcall(self):
         o = random.randint(20, Window.width - 20)
         p = random.randint(20, Window.height - 20)
@@ -33,62 +38,50 @@ class PitonApp(App):
 
     def r_animation(self, instance):
         if self.sptime == False:
-            self.img.source = 'figure-right.gif'
-            global upni, downni, leftni, rightni
-            upni = 0
-            downni = 0
-            leftni = 0
-            rightni = 1
-        else:
-            pass
+            global speed_x, speed_y
+            if speed_x != -5:
+                self.imglist[0].source = 'figure-right.gif'
+                speed_x = 5
+                speed_y = 0
 
     def d_animation(self, instance):
-        global upni, downni, leftni, rightni
         if self.sptime == False:
-            if upni == 1:
-                pass
-            else:
-                self.img.source = 'figure-down.gif'
-                upni = 0
-                downni = 1
-                leftni = 0
-                rightni = 0
-        else:
-            pass
+            global speed_x, speed_y
+            if speed_y != 5:
+                self.imglist[0].source = 'figure-down.gif'
+                speed_x = 0
+                speed_y = -5
 
     def l_animation(self, instance):
         if self.sptime == False:
-            self.img.source = 'figure-left.gif'
-            global upni, downni, leftni, rightni
-            upni = 0
-            downni = 0
-            leftni = 1
-            rightni = 0
-        else:
-            pass
+            global speed_x, speed_y
+            if speed_x != 5:
+                self.imglist[0].source = 'figure-left.gif'
+                speed_x = -5
+                speed_y = 0
 
     def u_animation(self, instance):
-        global upni, downni, leftni, rightni
         if self.sptime == False:
-            if downni == 1:
-                pass
-            else:
-                self.img.source = 'figure-up.gif'
-                upni = 1
-                downni = 0
-                leftni = 0
-                rightni = 0
-        else:
-            pass
+            global speed_x, speed_y
+            if speed_y != -5:
+                self.imglist[0].source = 'figure-up.gif'
+                speed_x = 0
+                speed_y = 5
 
     def restart(self, instance):
+        self.del_imglist = False
+        self.coordinates.clear()
+        self.coordinates.insert(0, self.imglist[0].pos.copy())
+
+        self.chislo = 0
+
         if self.pause.text == 'Продолжить':
             self.event = Clock.schedule_interval(self.runpiton, self.timer)
             self.pause.text = 'Пауза'
             self.sptime = False
         global number
         global opit
-        global upni, downni, leftni, rightni
+        global speed_x, speed_y
 
         number = 0
         opit = str(number)
@@ -106,9 +99,18 @@ class PitonApp(App):
         except kivy.uix.widget.WidgetException:
             pass
 
+        try:
+            if self.devol == False:
+                self.bl.add_widget(self.btn_lose)
+            else:
+                self.bl.remove_widget(self.btn_lose)
+        except kivy.uix.widget.WidgetException:
+            self.bl.remove_widget(self.btn_lose)
+            self.bl.add_widget(self.btn_lose)
+
         self.fl.add_widget(self.bgd)
         self.fl.add_widget(self.itm)
-        self.fl.add_widget(self.img)
+        self.fl.add_widget(self.imglist[0])
         self.fl.add_widget(self.gl)
 
         self.fl.add_widget(self.up)
@@ -117,24 +119,27 @@ class PitonApp(App):
         self.fl.add_widget(self.left)
 
         self.bgd.pos = [0, 0]
-        self.img.pos = [Window.width / 2, Window.height / 2]
+        self.imglist[0].pos = [Window.width / 2, Window.height / 2]
         self.itm.pos = [o, p]
 
-        self.img.source = 'figure-up.gif'
+        self.imglist[0].source = 'figure-up.gif'
 
         self.point.text = opit
 
         self.timer = 0.03
 
-        upni = 0
-        downni = 0
-        leftni = 0
-        rightni = 0
+        speed_x = 0
+        speed_y = 0
+
+        self.new_tail_counter = 1000
 
     def english(self, instance):
         self.w1.text = 'Restart'
+        self.w2.text = 'Restart'
 
         self.pause.text = 'Pause'
+
+        self.btn_lose.text = 'End the game'
 
         self.options.text = 'Options'
         self.ochko.text = 'Points:'
@@ -148,8 +153,11 @@ class PitonApp(App):
 
     def russian(self, instance):
         self.w1.text = 'Рестарт'
+        self.w2.text = 'Рестарт'
 
         self.pause.text = 'Пауза'
+
+        self.btn_lose.text = 'Закончить игру'
 
         self.options.text = 'Опция'
         self.ochko.text = 'Очки:'
@@ -161,14 +169,20 @@ class PitonApp(App):
         self.en = 0
         self.ru = 1
 
-    def lose(self):
+    def lose(self, *args):
         self.fl.remove_widget(self.bgd)
         self.fl.remove_widget(self.itm)
-        self.fl.remove_widget(self.img)
+        self.fl.remove_widget(self.imglist[0])
+        self.del_imglist = True
 
         self.fl.add_widget(self.los)
         self.fl.add_widget(self.sub1)
         self.fl.add_widget(self.sub2)
+        try:
+            self.fl.add_widget(self.options)
+            self.fl.add_widget(self.w1)
+        except kivy.uix.widget.WidgetException:
+            pass
 
     def funproz(self, instance):
         self.devol = False
@@ -182,12 +196,15 @@ class PitonApp(App):
         self.fl.remove_widget(self.los)
         self.fl.remove_widget(self.sub1)
         self.fl.remove_widget(self.sub2)
+        self.fl.remove_widget(self.options)
+        self.fl.remove_widget(self.w1)
 
-        self.glo = GridLayout(cols=2, padding = [0, 0, 0, Window.height / 4])
+        self.glo = GridLayout(rows=3, padding = [0, 0, 0, Window.height / 4])
         self.rubtn = Button(text='Русский язык', on_press = self.russian)
         self.enbtn = Button(text='English language', on_press = self.english)
         self.proz = Button(text='Прозрачная стена', on_press = self.funproz)
         self.real = Button(text='Непрозрачная стена', on_press = self.funreal)
+        self.w2 = Button(text="Рестарт", on_press=self.restart)
 
         self.fl.add_widget(self.glo)
 
@@ -195,6 +212,8 @@ class PitonApp(App):
         self.glo.add_widget(self.enbtn)
         self.glo.add_widget(self.proz)
         self.glo.add_widget(self.real)
+        self.glo.add_widget(Widget())
+        self.glo.add_widget(self.w2)
 
     def runpause(self, instance):
         if self.pause.text == 'Пауза':
@@ -207,9 +226,12 @@ class PitonApp(App):
             self.sptime = False
 
     def runpiton(self, *args):
+        global opit
+        global number
+
         self.gl.padding = [0, Window.height / 4, 0, 0]
         self.bgd.pos = [0, Window.height / 4]
-        self.img.size_hint_max = Window.height / 45, Window.height / 45
+        self.imglist[0].size_hint_max = Window.height / 45, Window.height / 45
         self.itm.size_hint_max = Window.height / 60, (Window.height / 60) + 1
 
         self.up.size_hint_max = Window.height / 25, Window.height / 25
@@ -223,11 +245,19 @@ class PitonApp(App):
         self.left.pos = [Window.width / 6.65, Window.height / 20.5]
 
         self.los = Label(text='Вы проиграли', pos=[0, 0 + Window.height / 4])
-        self.sub1 = Label(text='Piton ver.1.1', pos=[0, (self.w1.pos[1] * -1) + 50])
-        self.sub2 = Label(text='(c) Davron Tokhirov, Feb.2020', pos=[0, (self.w1.pos[1] * -1)])
+        self.sub1 = Label(text='Piton ver.1.1', pos=[0, (self.pause.pos[1] * -1)])
+        self.sub2 = Label(text='(c) Davron Tokhirov, Feb.2020', pos=[0, (self.pause.pos[1] * -1) - 50])
 
-        global opit
-        global number
+        self.options.pos = [Window.width / 2.5, self.los.pos[1] + 200]
+        self.w1.pos = [Window.width / 2.5, self.options.pos[1] - 60]
+
+        if self.del_imglist == True:
+            for i in range(1, self.chislo + 1):
+                try:
+                    self.fl.remove_widget(self.imglist[i])
+                    self.imglist.pop(i)
+                except IndexError:
+                    pass
 
         if self.en == 1 and self.ru == 0:
             self.los.text = 'You lose'
@@ -251,58 +281,71 @@ class PitonApp(App):
             except AttributeError:
                 pass
 
-        if upni == 1:
-            self.img.y += 5
-        if downni == 1:
-            self.img.y -= 5
-        if leftni == 1:
-            self.img.x -= 5
-        if rightni == 1:
-            self.img.x += 5
+        self.imglist[0].x += speed_x
+        self.imglist[0].y += speed_y
+        if speed_x != 0 or speed_y != 0:
+            self.coordinates.insert(0, self.imglist[0].pos.copy())
+            self.new_tail_counter += 1
+            if self.new_tail_counter == 3:
+                self.imglist.append(Image(source='figure.gif', allow_stretch=True, keep_ratio=False))
+                self.chislo = len(self.imglist) - 1
+                self.imglist[self.chislo].size_hint_max = Window.height / 45, Window.height / 45
+                self.fl.add_widget(self.imglist[self.chislo])
+            elif self.new_tail_counter > 3:
+                self.coordinates.pop(len(self.coordinates) - 1)
 
-        if self.img.x < 0 or self.img.x > Window.width:
+        for i in range(1, self.chislo + 1):
+            try:
+                self.imglist[i].size_hint_max = Window.height / 45, Window.height / 45
+                self.imglist[i].pos = self.coordinates[i * 3]
+            except IndexError:
+                pass
+
+        if self.imglist[0].x < 0 or self.imglist[0].x > Window.width:
             if self.devol:
                 self.lose()
             if self.devol == False:
-                if self.img.x < 0:
-                    self.img.x = Window.width
-                if self.img.x > Window.width:
-                    self.img.x = 0
+                if self.imglist[0].x < 0:
+                    self.imglist[0].x = Window.width
+                if self.imglist[0].x > Window.width:
+                    self.imglist[0].x = 0
 
-        if self.img.y > Window.height:
+        if self.imglist[0].y > Window.height:
             if self.devol:
                 self.lose()
             if self.devol == False:
-                self.img.y = Window.height / 3.9
+                self.imglist[0].y = Window.height / 3.9
 
         if self.itm.x < 0 or (self.itm.x + self.itm.width) > Window.width:
             PitonApp.itmcall(self)
         if self.itm.y < 0 or (self.itm.y + self.itm.height) > Window.height:
             PitonApp.itmcall(self)
 
-        if self.img.collide_widget(self.btn_u) or self.img.collide_widget(self.bl)  \
-                or self.img.collide_widget(self.pause):
+        if self.imglist[0].collide_widget(self.btn_u)  or self.imglist[0].collide_widget(self.bl)\
+                or self.imglist[0].collide_widget(self.pause):
             if self.devol:
                 self.lose()
             if self.devol == False:
-                self.img.y = Window.height
+                self.imglist[0].y = Window.height
 
-        if self.itm.collide_widget(self.btn_u) or self.itm.collide_widget(self.bl)  \
-                or self.itm.collide_widget(self.pause) or self.itm.collide_widget(self.btn_l)  \
+        if self.itm.collide_widget(self.btn_u) or self.itm.collide_widget(self.bl) \
+                or self.itm.collide_widget(self.pause) or self.itm.collide_widget(self.btn_l) \
                 or self.itm.collide_widget(self.btn_d) or self.itm.collide_widget(self.btn_r) :
             PitonApp.itmcall(self)
 
-        if self.img.collide_widget(self.itm):
-                eat.play()
-                number += 1
-                opit = str(number)
-                self.point.text = opit
-                PitonApp.itmcall(self)
-                self.speed += 1
-                if self.speed == 3:
-                    self.event = Clock.unschedule(self.runpiton)
-                    self.timer -= 0.0050
-                    self.event = Clock.schedule_interval(self.runpiton, self.timer)
+        if self.imglist[0].collide_widget(self.itm):
+            eat.play()
+            self.new_tail_counter = 0
+            number += 1
+            opit = str(number)
+            self.point.text = opit
+            PitonApp.itmcall(self)
+            self.speed += 1
+            if self.speed == 3:
+                self.speed = 0
+                self.event = Clock.unschedule(self.runpiton)
+                self.timer -= 0.0025
+                self.event = Clock.schedule_interval(self.runpiton, self.timer)
 
     def build(self):
         self.en = 0
@@ -311,6 +354,9 @@ class PitonApp(App):
         self.devol = True
         self.sptime = 0
         self.speed = 0
+        self.new_tail_counter = 1000
+        self.chislo = 0
+        self.del_imglist = False
 
         self.gl = GridLayout(rows=2, padding=[0, 0, 0, 0], size_hint=(1, .5))
         self.fl = FloatLayout(size=(500, 500))
@@ -324,10 +370,13 @@ class PitonApp(App):
         self.options = Button(text="Опция", on_press=self.runoptions)
         self.w1 = Button(text="Рестарт", on_press=self.restart)
 
+        self.options.size_hint_max = Window.width / 5, Window.height / 10
+        self.w1.size_hint_max = Window.width / 5, Window.height / 10
+
         self.bgd = Image(source='background.gif', allow_stretch = True, keep_ratio = False)
         self.ochko = Label(text='Очки:')
         self.point = Label(text=opit)
-        self.img = Image(source='figure-down.gif', allow_stretch = True, keep_ratio = False)
+        self.imglist = [Image(source='figure-down.gif', allow_stretch = True, keep_ratio = False)]
         self.itm = Image(source='item.gif', allow_stretch = True, keep_ratio = False)
 
         self.up = Image(source='up.png')
@@ -337,15 +386,18 @@ class PitonApp(App):
 
         self.pause = Button(text='Пауза', on_press=self.runpause)
 
+        self.btn_lose = Button(text='Закончить игру', on_press=self.lose)
+
         self.event = Clock.schedule_interval(self.runpiton, self.timer)
 
         self.bgd.pos = [0, 0]
-        self.img.pos = [Window.width / 2, Window.height / 2]
+        self.imglist[0].pos = [Window.width / 2, Window.height / 2]
+        self.coordinates = [self.imglist[0].pos]
         self.itm.pos = [o, p]
 
         self.fl.add_widget(self.bgd)
         self.fl.add_widget(self.itm)
-        self.fl.add_widget(self.img)
+        self.fl.add_widget(self.imglist[0])
         self.fl.add_widget(self.gl)
 
         self.gl.add_widget(self.bl)
@@ -355,8 +407,6 @@ class PitonApp(App):
         self.gl.add_widget(self.btn_d)
         self.gl.add_widget(self.btn_r)
 
-        self.bl.add_widget(self.options)
-        self.bl.add_widget(self.w1)
         self.bl.add_widget(self.ochko)
         self.bl.add_widget(self.point)
 
