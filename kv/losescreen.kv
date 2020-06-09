@@ -1,0 +1,63 @@
+#:import Window kivy.core.window.Window
+
+<LoseScreen>:
+    FloatLayout:
+        size: 500, 500
+        Label:
+            text: 'Вы проиграли'
+            pos: [0, 0 + Window.height / 4]
+        Label:
+            text: 'Piton ver.1.2'
+            pos: [0, (pause_button.pos[1] * -1)]
+        Label:
+            text: '(c) Davron Tokhirov, May.2020'
+            pos: [0, (pause_button.pos[1] * -1) - 50]
+        Button:
+            id: options_button
+            text: "Опция"
+            on_press: app.runoptions()
+            size_hint_max: Window.width / 5, Window.height / 20
+            pos: [Window.width / 2.5, Window.height / 2]
+        Button:
+            text: "Рестарт"
+            on_press: app.restart()
+            size_hint_max: Window.width / 5, Window.height / 20
+            pos: [Window.width / 2.5, Window.width / 2.5 - Window.width / 5]
+        GridLayout:
+            rows: 2
+            padding: [0, Window.height / 4, 0, 0]
+            size_hint: (1, .5)
+            GridLayout:
+                rows: 2
+                cols: 2
+                Label:
+                    text: 'Очки:'
+                Label:
+            Button:
+                on_press: app.u_animation()
+                Image:
+                    center: self.parent.center
+                    source: 'images/up.png'
+                    size: Window.height / 25, Window.height / 25
+            Button:
+                id: pause_button
+                text: 'Пауза'
+                on_press: app.runpause()
+            Button:
+                on_press: app.l_animation()
+                Image:
+                    center: self.parent.center
+                    source: 'images/left.png'
+                    size: Window.height / 25, Window.height / 25
+            Button:
+                on_press: app.d_animation()
+                Image:
+                    center: self.parent.center
+                    source: 'images/down.png'
+                    size: Window.height / 25, Window.height / 25
+            Button:
+                on_press: app.r_animation()
+                Image:
+                    center: self.parent.center
+                    source: 'images/right.png'
+                    size: Window.height / 25, Window.height / 25

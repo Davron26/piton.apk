@@ -1,0 +1,17 @@
+#:include kv/homescreen.kv
+#:include kv/losescreen.kv
+#:include kv/settingsscreen.kv
+
+GridLayout:
+    cols: 1
+    ScreenManager:
+        id: screen_manager
+        HomeScreen:
+            name: "home_screen"
+            id: home_screen
+        LoseScreen:
+            name: "lose_screen"
+            id: lose_screen
+        SettingsScreen:
+            name: "settings_screen"
+            id: settings_screen

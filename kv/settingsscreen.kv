@@ -1,0 +1,61 @@
+#:import Window kivy.core.window.Window
+
+<SettingsScreen>:
+    FloatLayout:
+        size: 500, 500
+        GridLayout:
+            rows: 3
+            padding: [0, 0, 0, Window.height / 4]
+            Button:
+                text: 'Русский язык'
+                on_press: app.russian()
+            Button:
+                text: 'English language'
+                on_press: app.english()
+            Button:
+                text: 'Сквозные края'
+                on_press: app.funproz()
+            Button:
+                text: 'Закрытые края'
+                on_press: app.funreal()
+            Widget:
+            Button:
+                text: "Рестарт"
+                on_press: app.restart()
+        GridLayout:
+            rows: 2
+            padding: [0, Window.height / 4, 0, 0]
+            size_hint: (1, .5)
+            GridLayout:
+                rows: 2
+                cols: 2
+                Label:
+                    text: 'Очки:'
+                Label:
+            Button:
+                on_press: app.u_animation()
+                Image:
+                    center: self.parent.center
+                    source: 'images/up.png'
+                    size: Window.height / 25, Window.height / 25
+            Button:
+                text: 'Пауза'
+                on_press: app.runpause()
+            Button:
+                on_press: app.l_animation()
+                Image:
+                    center: self.parent.center
+                    source: 'images/left.png'
+                    size: Window.height / 25, Window.height / 25
+            Button:
+                on_press: app.d_animation()
+                Image:
+                    center: self.parent.center
+                    source: 'images/down.png'
+                    size: Window.height / 25, Window.height / 25
+            Button:
+                on_press: app.r_animation()
+                Image:
+                    center: self.parent.center
+                    source: 'images/right.png'
+                    size: Window.height / 25, Window.height / 25
