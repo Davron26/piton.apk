@@ -2,6 +2,7 @@
 
 <HomeScreen>:
     FloatLayout:
+        id: fl
         size: 500, 500
         Image:
             source: 'images/background.gif'
@@ -9,34 +10,35 @@
             keep_ratio: False
             pos: 0, Window.height / 4
         Image:
+            id: itm
             source: 'images/item.gif'
             allow_stretch: True
             keep_ratio: False
             size_hint_max: Window.height / 60, (Window.height / 60) + 1
-        Image:
-            id: piton
-            source: 'images/figure-down.gif'
-            allow_stretch: True
-            keep_ratio: False
-            size_hint_max: Window.height / 45, Window.height / 45
-            pos: Window.width / 2, Window.height / 2
         GridLayout:
+            id: button_layout
             rows: 2
             padding: [0, Window.height / 4, 0, 0]
             size_hint: (1, .5)
             GridLayout:
+                id: bl
                 rows: 2
                 cols: 2
                 Label:
+                    id: point_text
                     text: 'Очки:'
                 Label:
+                    id: point
+                    text: '0'
             Button:
+                id: btn_u
                 on_press: app.u_animation()
                 Image:
                     center: self.parent.center
                     source: 'images/up.png'
                     size: Window.height / 25, Window.height / 25
             Button:
+                id: pause
                 text: 'Пауза'
                 on_press: app.runpause()
             Button:

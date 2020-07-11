@@ -6,21 +6,30 @@
         GridLayout:
             rows: 3
             padding: [0, 0, 0, Window.height / 4]
-            Button:
+            ToggleButton:
                 text: 'Русский язык'
+                group: 'language'
+                state: 'down'
                 on_press: app.russian()
-            Button:
+            ToggleButton:
                 text: 'English language'
+                group: 'language'
                 on_press: app.english()
-            Button:
+            ToggleButton:
+                id: proz
                 text: 'Сквозные края'
+                group: 'edges'
                 on_press: app.funproz()
-            Button:
+            ToggleButton:
+                id: real
                 text: 'Закрытые края'
+                group: 'edges'
+                state: 'down'
                 on_press: app.funreal()
             Widget:
             Button:
-                text: "Рестарт"
+                id: restart2
+                text: 'Рестарт'
                 on_press: app.restart()
         GridLayout:
             rows: 2
@@ -30,6 +39,7 @@
                 rows: 2
                 cols: 2
                 Label:
+                    id: ochko2
                     text: 'Очки:'
                 Label:
             Button:
@@ -39,7 +49,8 @@
                     source: 'images/up.png'
                     size: Window.height / 25, Window.height / 25
             Button:
-                text: 'Пауза'
+                id: pause2
+                text: 'Продолжить'
                 on_press: app.runpause()
             Button:
                 on_press: app.l_animation()
