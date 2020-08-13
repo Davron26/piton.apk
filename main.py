@@ -32,28 +32,28 @@ class MainApp(App):
     def r_animation(self):
         if self.sptime == False:
             if self.speed_x != -5:
-                self.imglist[0].source = 'images/figure-right.gif'
+                self.imglist[0].source = 'images/figure-right.png'
                 self.speed_x = 5
                 self.speed_y = 0
 
     def d_animation(self):
         if self.sptime == False:
             if self.speed_y != 5:
-                self.imglist[0].source = 'images/figure-down.gif'
+                self.imglist[0].source = 'images/figure-down.png'
                 self.speed_x = 0
                 self.speed_y = -5
 
     def l_animation(self):
         if self.sptime == False:
             if self.speed_x != 5:
-                self.imglist[0].source = 'images/figure-left.gif'
+                self.imglist[0].source = 'images/figure-left.png'
                 self.speed_x = -5
                 self.speed_y = 0
 
     def u_animation(self):
         if self.sptime == False:
             if self.speed_y != -5:
-                self.imglist[0].source = 'images/figure-up.gif'
+                self.imglist[0].source = 'images/figure-up.png'
                 self.speed_x = 0
                 self.speed_y = 5
 
@@ -108,7 +108,7 @@ class MainApp(App):
         for i in range(0, self.chislo + 1):
             fl.remove_widget(self.imglist[i])
 
-        self.imglist = [Image(source='images/figure-down.gif', allow_stretch=True,
+        self.imglist = [Image(source='images/figure-down.png', allow_stretch=True,
                               keep_ratio=False, size_hint_max=(Window.height / 45, Window.height / 45),
                               pos=[Window.width / 2, Window.height / 2])]
         fl.add_widget(self.imglist[0])
@@ -131,7 +131,7 @@ class MainApp(App):
         p = random.randint(20, Window.height - 20)
 
         self.imglist[0].pos = [Window.width / 2, Window.height / 2]
-        self.imglist[0].source = 'images/figure-down.gif'
+        self.imglist[0].source = 'images/figure-down.png'
         itm.pos = [o, p]
         point.text = self.opit
         point2.text = self.opit
@@ -229,7 +229,7 @@ class MainApp(App):
             self.coordinates.insert(0, self.imglist[0].pos.copy())
             self.new_tail_counter += 1
             if self.new_tail_counter == (int((self.imglist[self.chislo].size_hint_max[0] / 3))):
-                self.imglist.append(Image(source='images/figure.gif', allow_stretch=True, keep_ratio=False))
+                self.imglist.append(Image(source='images/figure.png', allow_stretch=True, keep_ratio=False))
                 self.chislo = len(self.imglist) - 1
                 self.imglist[self.chislo].size_hint_max = Window.height / 45, Window.height / 45
                 fl.add_widget(self.imglist[self.chislo])
@@ -288,7 +288,7 @@ class MainApp(App):
         self.is_setup = True
         home_screen = self.root.ids["home_screen"]
         fl = home_screen.ids["fl"]
-        self.imglist = [Image(source='images/figure-down.gif', allow_stretch=True,
+        self.imglist = [Image(source='images/figure-down.png', allow_stretch=True,
                               keep_ratio=False, size_hint_max=(Window.height / 45, Window.height / 45),
                               pos=[Window.width / 2, Window.height / 2])]
 
